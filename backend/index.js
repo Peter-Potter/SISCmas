@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import {db, User} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,8 +22,9 @@ app.post('/submit-contact', async (req, res) => {
     const { name, email, message } = req.body;
 
     try {
-        console.log(`${name} ${email} ${message}`);
-        res.send('Thank you! Your message has been saved.');
+        const user = await User.create({name:name, email:email, message:message});
+        
+        res.send(`Thank you, ${user.name}! Your message has been saved.`);
     } catch (err) {
         console.error(err);
         res.status(500).send('Database error. Could not save message.');
